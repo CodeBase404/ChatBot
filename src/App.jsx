@@ -16,7 +16,7 @@ import EmojiPicker from "emoji-picker-react";
 
 const GEMINI_API_KEY = "AIzaSyB11RNtdp9C4jrO3GYA_fDN_riT3MehRu4"; // Replace with your actual key
 const ELEVEN_LABS_API_KEY =
-  "sk_4c610d2d7772968a71450f1ab0e58c1996463ae318b2f1dd";
+  "sk_3cf482af50699721277654a122c016b940a1f7df7f9c9749";
 const VOICE_ID = "zs7UfyHqCCmny7uTxCYi";
 
 function App() {
