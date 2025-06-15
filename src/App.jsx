@@ -13,8 +13,10 @@ import {
   Zap,
   ArrowDownToLine,
   ClipboardCopy,
+  Copy,
 } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
+import dp from '/image.png'
 
 const GEMINI_API_KEY = "AIzaSyB11RNtdp9C4jrO3GYA_fDN_riT3MehRu4"; // Replace with your actual key
 const ELEVEN_LABS_API_KEY =  "sk_3cf482af50699721277654a122c016b940a1f7df7f9c9749";
@@ -289,20 +291,21 @@ function App() {
     <div
       className={`min-h-screen font-sans transition-all duration-500 ${themeClasses}`}
     >
-      <div className="max-w-4xl mx-auto p-4 h-screen flex flex-col">
+      <div className="max-w-4xl mx-auto p-2 md:p-4 h-screen flex flex-col">
         {/* Header */}
         <div
-          className={`flex justify-between items-center mb-6 p-4 bg-white/10 backdrop-blur-lg rounded-2xl border ${
+          className={`flex justify-between items-center mb-6 p-2 gap-1.5 md:p-4 bg-white/10 backdrop-blur-lg rounded-2xl border ${
             darkMode ? "border-white/10 " : "border-black/10"
           } shadow`}
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-              <MessageCircle className="w-5 h-5 text-white" />
-            </div>
+          <div className="flex items-center gap-1.5 md:gap-3">
+            {/* <div className=" w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center"> */}
+              {/* <MessageCircle className="w-5 h-5 text-white" /> */}
+              <img src={dp} alt="" className="rounded-full w-11 h-11"/>
+            {/* </div> */}
             <div>
-              <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                RohitGPT
+              <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-500 bg-clip-text text-transparent">
+                Rohit
               </h1>
               <div className="flex items-center gap-1 text-xs opacity-70">
                 <div
@@ -314,7 +317,7 @@ function App() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <div className="tooltip">
               <div className="tooltip-content">
                 <div className="animate-bounce text-orange-400  text-[14px] font-black">
@@ -329,13 +332,13 @@ function App() {
                     : "bg-white/20 hover:bg-white/30 backdrop-blur-sm"
                 }`}
               >
-                <div className="flex items-center hover:bg-gray-200 rounded-2xl p-2 md:px-3 gap-1 md:gap-1 text-[10px] md:text-[12px]">
+                <div className="flex items-center hover:bg-purple-900/30 rounded-2xl p-2 md:px-3 gap-0.5 md:gap-1 text-[10px] md:text-[12px]">
                   {voiceOnlyMode ? (
                     <Zap className="w-4 h-4" />
                   ) : (
                     <Mic className="w-4 h-4" />
                   )}
-                  <span className="hidden md:block">Voice Mode </span>
+                  <span className="">Voice Mode </span>
                 </div>
               </button>
             </div>
@@ -348,10 +351,10 @@ function App() {
               </div>
               <button
                 onClick={clearChat}
-                className="p-2 rounded-full bg-white/20 hover:bg-red-500/20 transition-all duration-300 backdrop-blur-sm"
+                className="p-2 rounded-full bg-white/20 hover:bg-rose-500/10 transition-all duration-300 backdrop-blur-sm"
                 title="Clear all chats"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-4 h-4 text-rose-700 font-bold" />
               </button>
             </div>
             <div className="tooltip">
@@ -365,7 +368,7 @@ function App() {
                 className="p-2 rounded-full bg-white/20 hover:bg-green-500/20 transition-all duration-300 backdrop-blur-sm"
                 title="Download chat"
               >
-                <ArrowDownToLine className="w-4 h-4" />
+                <ArrowDownToLine className="w-4 h-4 text-green-400" />
               </button>
             </div>
             <button
@@ -373,7 +376,7 @@ function App() {
               className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-300 backdrop-blur-sm"
             >
               {darkMode ? (
-                <Sun className="w-4 h-4" />
+                <Sun className="w-4 h-4 text-yellow-200" />
               ) : (
                 <Moon className="w-4 h-4" />
               )}
@@ -385,7 +388,7 @@ function App() {
         <div className="flex-1 flex flex-col min-h-0">
           <div
             ref={scrollRef}
-            className={`flex-1 overflow-y-auto p-4 space-y-4 bg-white/5 backdrop-blur-lg rounded-2xl border ${
+            className={`flex-1 overflow-y-auto scrollbar-none p-4 space-y-4 bg-white/5 backdrop-blur-lg rounded-2xl border ${
               darkMode
                 ? "border-white/10  shadow-inner"
                 : "shadow border-black/10"
@@ -450,7 +453,7 @@ function App() {
                           className="p-1 rounded hover:text-green-700 active:scale-95 hover:bg-gray-400/20  transition-all duration-200"
                           title="Copy"
                         >
-                          <ClipboardCopy className="w-4 h-4" />
+                          <Copy className="w-4 h-4" />
                         </button>
                       </div>
                     )}
@@ -495,7 +498,7 @@ function App() {
                     className={`w-full bg-white/10 backdrop-blur-sm rounded-xl border  px-4 py-3 text-sm ${
                       darkMode
                         ? "placeholder-white/50 border-white/10"
-                        : "placeholder-black/50 border-black/5"
+                        : "placeholder-black/50 border-black/5 "
                     } focus:outline-none focus:ring-1 focus:ring-blue-500/50 resize-none transition-all duration-200`}
                     placeholder="Type your message"
                     value={input}
