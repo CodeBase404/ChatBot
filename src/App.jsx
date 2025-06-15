@@ -16,10 +16,11 @@ import {
   Copy,
 } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
-import dp from '/image.png'
+import dp from "/icon.png";
 
 const GEMINI_API_KEY = "AIzaSyB11RNtdp9C4jrO3GYA_fDN_riT3MehRu4"; // Replace with your actual key
-const ELEVEN_LABS_API_KEY =  "sk_3cf482af50699721277654a122c016b940a1f7df7f9c9749";
+const ELEVEN_LABS_API_KEY =
+  "sk_3cf482af50699721277654a122c016b940a1f7df7f9c9749";
 const VOICE_ID = "zs7UfyHqCCmny7uTxCYi";
 
 function App() {
@@ -299,10 +300,7 @@ function App() {
           } shadow`}
         >
           <div className="flex items-center gap-1.5 md:gap-3">
-            {/* <div className=" w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center"> */}
-              {/* <MessageCircle className="w-5 h-5 text-white" /> */}
-              <img src={dp} alt="" className="rounded-full w-11 h-11"/>
-            {/* </div> */}
+            <img src={dp} alt="" className="rounded-full w-12 h-12" />
             <div>
               <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-500 bg-clip-text text-transparent">
                 Rohit
@@ -312,7 +310,7 @@ function App() {
                   aria-label="success"
                   className="status status-success"
                 ></div>{" "}
-                <span >{loading?"typing...":"online"}</span>
+                <span>{loading ? "typing..." : "online"}</span>
               </div>
             </div>
           </div>
