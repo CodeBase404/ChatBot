@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
   Volume2,
-  VolumeX,
   Mic,
-  MicOff,
   Sun,
   Moon,
   Send,
@@ -12,13 +10,12 @@ import {
   MessageCircle,
   Zap,
   ArrowDownToLine,
-  ClipboardCopy,
   Copy,
 } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
 import dp from "/icon.png";
 
-const GEMINI_API_KEY = "AIzaSyB11RNtdp9C4jrO3GYA_fDN_riT3MehRu4"; // Replace with your actual key
+const GEMINI_API_KEY = "AIzaSyB11RNtdp9C4jrO3GYA_fDN_riT3MehRu4";
 const ELEVEN_LABS_API_KEY =
   "sk_3cf482af50699721277654a122c016b940a1f7df7f9c9749";
 const VOICE_ID = "zs7UfyHqCCmny7uTxCYi";
@@ -28,12 +25,18 @@ function App() {
   const [promt, setPromt] = useState([]);
   const [loading, setLoading] = useState(false);
   const [voiceOnlyMode, setVoiceOnlyMode] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => {
+    const stored = localStorage.getItem("dark-mode");
+    return stored ? JSON.parse(stored) : true;
+  });
+
   const [showEmoji, setShowEmoji] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [activeSpeakerIndex, setActiveSpeakerIndex] = useState(null);
   const scrollRef = useRef(null);
   const textareaRef = useRef(null);
+  const [reactions, setReactions] = useState({});
+  const [activeReactionIndex, setActiveReactionIndex] = useState(null);
 
   const handleVoiceInput = () => {
     const SpeechRecognition =
@@ -253,6 +256,8 @@ function App() {
     if (confirm("Are you sure you want to delete all conversations?")) {
       setPromt([]);
       saveToLocalStorage([]);
+      setReactions({});
+      localStorage.removeItem("chat-reactions");
     }
   };
 
@@ -277,6 +282,10 @@ function App() {
     ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white"
     : "bg-gradient-to-br from-blue-50 via-white to-purple-50 text-gray-800";
 
+  useEffect(() => {
+    localStorage.setItem("dark-mode", JSON.stringify(darkMode));
+  }, [darkMode]);
+
   const downloadChat = () => {
     const blob = new Blob([JSON.stringify(promt, null, 2)], {
       type: "application/json",
@@ -288,6 +297,23 @@ function App() {
     a.click();
   };
 
+  const handleReact = (index, emoji) => {
+    const updated = {
+      ...reactions,
+      [index]: emoji,
+    };
+    setReactions(updated);
+    localStorage.setItem("chat-reactions", JSON.stringify(updated));
+    setActiveReactionIndex(null);
+  };
+
+  useEffect(() => {
+    const savedReactions = localStorage.getItem("chat-reactions");
+    if (savedReactions) {
+      setReactions(JSON.parse(savedReactions));
+    }
+  }, []);
+
   return (
     <div
       className={`min-h-screen font-sans transition-all duration-500 ${themeClasses}`}
@@ -295,7 +321,7 @@ function App() {
       <div className="max-w-4xl mx-auto p-2 md:p-4 h-screen flex flex-col">
         {/* Header */}
         <div
-          className={`flex justify-between items-center mb-6 p-2 gap-1.5 md:p-4 bg-white/10 backdrop-blur-lg rounded-2xl border ${
+          className={`flex justify-between items-center mb-4 p-2 gap-1.5 md:p-4 bg-white/10 backdrop-blur-lg rounded-2xl border ${
             darkMode ? "border-white/10 " : "border-black/10"
           } shadow`}
         >
@@ -413,6 +439,11 @@ function App() {
 
             {promt.map((msg, idx) => (
               <div
+                onClick={() =>
+                  setActiveReactionIndex(
+                    activeReactionIndex === idx ? null : idx
+                  )
+                }
                 key={idx}
                 className={`flex ${
                   msg.role === "user" ? "justify-end" : "justify-start"
@@ -430,6 +461,37 @@ function App() {
                     <div className="text-xs opacity-70">{msg.timestamp}</div>
                     {msg.role === "model" && (
                       <div className="flex items-center gap-2">
+                        <div className="relative  text-sm text-gray-500">
+                          <button className=" hover:text-purple-600">
+                            {reactions[idx] ? `${reactions[idx]}` : ""}
+                          </button>
+
+                          {activeReactionIndex === idx && (
+                            <div className="absolute -top-15 -right-19  bg-white p-4 rounded-lg select-none shadow-lg flex gap-5 z-10">
+                              <button onClick={() => handleReact(idx, "👍")}>
+                                👍
+                              </button>
+                              <button onClick={() => handleReact(idx, "❤️")}>
+                                ❤️
+                              </button>
+                              <button onClick={() => handleReact(idx, "😂")}>
+                                😂
+                              </button>
+                              <button onClick={() => handleReact(idx, "🥲")}>
+                                🥲
+                              </button>
+                              <button onClick={() => handleReact(idx, "😁")}>
+                                😁
+                              </button>
+                              <button onClick={() => handleReact(idx, "😎")}>
+                                😎
+                              </button>
+                              <button onClick={() => handleReact(idx, "")}>
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
                         <button
                           onClick={() => speakText(msg.content, idx)}
                           className="p-1 rounded-full hover:bg-gray-400/20  transition-all duration-200"
@@ -461,16 +523,8 @@ function App() {
             ))}
 
             {loading && (
-              <div className="flex justify-start">
-                <div className="bg-white/90 p-4 rounded-2xl rounded-bl-md shadow-lg backdrop-blur-sm border border-white/30">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" />
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-100" />
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-200" />
-                    </div>
-                  </div>
-                </div>
+              <div className="flex justify-start pl-2">
+                <span className="loading loading-dots loading-lg"></span>
               </div>
             )}
           </div>
