@@ -11,12 +11,13 @@ import {
   Trash2,
   MessageCircle,
   Zap,
+  ArrowDownToLine,
+  ClipboardCopy,
 } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
 
 const GEMINI_API_KEY = "AIzaSyB11RNtdp9C4jrO3GYA_fDN_riT3MehRu4"; // Replace with your actual key
-const ELEVEN_LABS_API_KEY =
-  "sk_3cf482af50699721277654a122c016b940a1f7df7f9c9749";
+const ELEVEN_LABS_API_KEY =  "sk_3cf482af50699721277654a122c016b940a1f7df7f9c9749";
 const VOICE_ID = "zs7UfyHqCCmny7uTxCYi";
 
 function App() {
@@ -153,15 +154,19 @@ function App() {
       systemInstruction: {
         parts: [
           {
-            text: `You are a male and named is  Rohit who speaks in Hinglish. You call when you explain somthing after that chamka, bhai,are yrr, to chaliye suru krte hai,
+            text: `You are a male and named is Rohit who speaks in Hinglish.
+            Rohit Negi Founder of Coder Army || Ex-SDE at UBER || GATE AIR 202 || Got Highest Placement in India in 2022
+            You call when you explain somthing after that chamka, bhai,are yrr, to chaliye suru krte hai,
             these are word which rohit negi use when he speak mostly time
 
-            keywords: which rohit negi use in his conversation mostly
+            keywords: which rohit negi use in his conversation mostly time
+            use need to use these word jisse you are react like rohit negi
             ab toh bhai,
             behind the scene chize kese kaam krti hai
             are bhai,
             dekho bhai,
             sense bana rha hai aapko,
+            ab hoga maut ka khel suru kre,
             when he rohit kisi ko kuch samjhata hai uske baaad he asking: chamak rha hai sab,
             when topic end uske baad he say or topic start: chaliye phir,
             at the end,
@@ -173,6 +178,48 @@ function App() {
             agar koi bolo mujhse nahi ho pata :indepth karo bhai,
             first thot principle ka use kro first thot principle ka socho kisi ne banaya hoga to kese socha hoga,
 
+            Conversation of rohit negi:
+            me : bhaiya samjh gaya
+            rohit negi: chamak raha hna 
+            me: bhaiya indepth krana 
+            rohit negi: haa bhai indepth hi hoga 
+            me:accha bhiaya ye aese kaam karta hai,
+            rohit negi: sense bana rha hai ab,
+            me:haa bhaiya maja aaya,
+            rohit negi:first thot principle ka use kroge to chize clear hogi jada
+            
+            rohit negi nexus course announce if anybody ask about rohit negi course or nexus course then reply according to this
+            Course details 
+            🧠 Course Summary: Web Development + Blockchain + DSA + System Design (LIVE & Recorded)
+            Instructor: Rohit Negi | Start Date: 16 Sept 2024 | Live Timing: 9–10 PM (Mon–Fri)
+
+            📌 Course Includes:
+            Web Development (Beginner to Advanced)
+            HTML, CSS, JS, React, TypeScript, Node, Express, MongoDB, Auth, WebSockets, WebRTC, APIs
+            Industry Projects + Deployment
+
+            Blockchain Development
+            Fundamentals, Cryptography, Ethereum, Solana, Smart Contracts, Solidity, Rust
+            Hands-on Projects + Deployment
+
+            Data Structures & Algorithms (DSA)
+            150+ hours of recorded content (C++ based)
+            Covers STL, Recursion, OOPs, Trees, Graphs, DP, Backtracking & more
+            300+ coding questions + Completion Certificate
+            Beginner-friendly, No prerequisite needed
+
+            System Design (Starting 7 July 2025)
+            Covers HLD concepts, real-world architectures, and systems like Instagram, WhatsApp, Google Docs
+            Includes Load Balancing, Caching, Scaling, API Gateway, CDN, Messaging Queues & more
+            Career Support
+
+            Resume & LinkedIn Optimization
+            Discord Doubt Group
+            3 Years Validity | Hinglish Language
+
+            For queries: negibhairohit9@gmail.com
+            Recordings available after each live class
+            Max course max price is ₹8000 but on discout provide ₹5,500 currently but price min price when course start ₹4500 , 
            `,
           },
         ],
@@ -227,6 +274,17 @@ function App() {
     ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white"
     : "bg-gradient-to-br from-blue-50 via-white to-purple-50 text-gray-800";
 
+  const downloadChat = () => {
+    const blob = new Blob([JSON.stringify(promt, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "rohit-chat-history.json";
+    a.click();
+  };
+
   return (
     <div
       className={`min-h-screen font-sans transition-all duration-500 ${themeClasses}`}
@@ -260,24 +318,24 @@ function App() {
             <div className="tooltip">
               <div className="tooltip-content">
                 <div className="animate-bounce text-orange-400  text-[14px] font-black">
-                  Click it to activate, then send msg
+                  Activate voice mode, and send msg
                 </div>
               </div>
               <button
                 onClick={() => setVoiceOnlyMode(!voiceOnlyMode)}
-                className={`px-2  md:px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 ${
+                className={`rounded-full text-xs font-medium transition-all duration-300 ${
                   voiceOnlyMode
                     ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg"
                     : "bg-white/20 hover:bg-white/30 backdrop-blur-sm"
                 }`}
               >
-                <div className="flex items-center gap-1 md:gap-2 text-[10px] md:text-[12px]">
+                <div className="flex items-center hover:bg-gray-200 rounded-2xl p-2 md:px-3 gap-1 md:gap-1 text-[10px] md:text-[12px]">
                   {voiceOnlyMode ? (
-                    <Zap className="w-3 h-3" />
+                    <Zap className="w-4 h-4" />
                   ) : (
-                    <Mic className="w-3 h-3 md:w-4 md:h-4" />
+                    <Mic className="w-4 h-4" />
                   )}
-                  Voice Mode
+                  <span className="hidden md:block">Voice Mode </span>
                 </div>
               </button>
             </div>
@@ -296,7 +354,20 @@ function App() {
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
-
+            <div className="tooltip">
+              <div className="tooltip-content">
+                <div className="animate-bounce text-orange-400  text-[14px] font-black">
+                  Download chats
+                </div>
+              </div>
+              <button
+                onClick={downloadChat}
+                className="p-2 rounded-full bg-white/20 hover:bg-green-500/20 transition-all duration-300 backdrop-blur-sm"
+                title="Download chat"
+              >
+                <ArrowDownToLine className="w-4 h-4" />
+              </button>
+            </div>
             <button
               onClick={() => setDarkMode(!darkMode)}
               className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-300 backdrop-blur-sm"
@@ -357,24 +428,31 @@ function App() {
                   <div className="flex items-center justify-between mt-2">
                     <div className="text-xs opacity-70">{msg.timestamp}</div>
                     {msg.role === "model" && (
-                      <button
-                        onClick={() => speakText(msg.content, idx)}
-                        className="p-1 rounded-full hover:bg-white/20 transition-all duration-200"
-                        disabled={
-                          activeSpeakerIndex !== null &&
-                          activeSpeakerIndex !== idx
-                        }
-                      >
-                        {activeSpeakerIndex === idx ? (
-                          <div className="flex gap-1 items-center">
-                            <div className="w-1 h-3 bg-blue-500 animate-pulse rounded-full" />
-                            <div className="w-1 h-4 bg-blue-500 animate-pulse delay-100 rounded-full" />
-                            <div className="w-1 h-3 bg-blue-500 animate-pulse delay-200 rounded-full" />
-                          </div>
-                        ) : (
-                          <Volume2 className="w-4 h-4" />
-                        )}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => speakText(msg.content, idx)}
+                          className="p-1 rounded-full hover:bg-gray-400/20  transition-all duration-200"
+                          disabled={
+                            activeSpeakerIndex !== null &&
+                            activeSpeakerIndex !== idx
+                          }
+                        >
+                          {activeSpeakerIndex === idx ? (
+                            <Volume2 className="w-4 h-4 text-green-600 active:scale-95" />
+                          ) : (
+                            <Volume2 className="w-4 h-4" />
+                          )}
+                        </button>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(msg.content);
+                          }}
+                          className="p-1 rounded hover:text-green-700 active:scale-95 hover:bg-gray-400/20  transition-all duration-200"
+                          title="Copy"
+                        >
+                          <ClipboardCopy className="w-4 h-4" />
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -419,7 +497,7 @@ function App() {
                         ? "placeholder-white/50 border-white/10"
                         : "placeholder-black/50 border-black/5"
                     } focus:outline-none focus:ring-1 focus:ring-blue-500/50 resize-none transition-all duration-200`}
-                    placeholder="Type your message here..."
+                    placeholder="Type your message"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => {
