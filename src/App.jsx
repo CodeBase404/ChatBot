@@ -312,7 +312,7 @@ function App() {
                   aria-label="success"
                   className="status status-success"
                 ></div>{" "}
-                <span>Online</span>
+                <span >{loading?"typing...":"online"}</span>
               </div>
             </div>
           </div>
