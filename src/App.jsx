@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
 import dp from "/icon.png";
+import WelcomeShortcutsModal from "./components/ShortcutsModal ";
 
 const GEMINI_API_KEY = "AIzaSyB11RNtdp9C4jrO3GYA_fDN_riT3MehRu4";
 const ELEVEN_LABS_API_KEY =
@@ -37,6 +38,7 @@ function App() {
   const textareaRef = useRef(null);
   const [reactions, setReactions] = useState({});
   const [activeReactionIndex, setActiveReactionIndex] = useState(null);
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   const handleVoiceInput = () => {
     const SpeechRecognition =
@@ -192,6 +194,8 @@ function App() {
             me:accha bhiaya ye aese kaam karta hai,
             rohit negi: sense bana rha hai ab,
             me:haa bhaiya maja aaya,
+            bhaiya chaye pilao → reply: Bhai chai AI se nahi milti 😅
+            kya kar rahe ho? → reply: Code likh rha hu bhai, aur tum?
             rohit negi:first thot principle ka use kroge to chize clear hogi jada
             
             rohit negi nexus course announce if anybody ask about rohit negi course or nexus course then reply according to this
@@ -314,6 +318,50 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.key === "e") {
+        e.preventDefault();
+        setShowEmoji((prev) => !prev); // Emoji Picker
+      }
+
+      if (e.ctrlKey && e.key === "d") {
+        e.preventDefault();
+        downloadChat(); // Download Chat
+      }
+
+      if (e.ctrlKey && e.key === "x") {
+        e.preventDefault();
+        setDarkMode((prev) => !prev); // Toggle Theme
+      }
+
+      if (e.ctrlKey && e.key === "l") {
+        e.preventDefault();
+        clearChat(); // Clear/Delete Chat
+      }
+
+      if (e.ctrlKey && e.key === "m") {
+        e.preventDefault();
+        setVoiceOnlyMode((prev) => !prev); // Voice Mode
+      }
+
+      if (e.ctrlKey && e.key === "Enter") {
+        e.preventDefault();
+        if (voiceOnlyMode) {
+          handleVoiceInput(); // Start Voice Input
+        }
+      }
+
+      if (e.key === "Enter" && !e.shiftKey && !voiceOnlyMode) {
+        e.preventDefault();
+        handleSendPrompt(); // Normal Send Message
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [voiceOnlyMode, darkMode, showEmoji, promt]);
+
   return (
     <div
       className={`min-h-screen font-sans transition-all duration-500 ${themeClasses}`}
@@ -321,7 +369,7 @@ function App() {
       <div className="max-w-4xl mx-auto p-2 md:p-4 h-screen flex flex-col">
         {/* Header */}
         <div
-          className={`flex justify-between items-center mb-4 p-2 gap-1.5 md:p-4 bg-white/10 backdrop-blur-lg rounded-2xl border ${
+          className={`flex justify-between items-center select-none mb-4 p-2 gap-1.5 md:p-4 bg-white/10 backdrop-blur-lg rounded-2xl border ${
             darkMode ? "border-white/10 " : "border-black/10"
           } shadow`}
         >
@@ -341,22 +389,26 @@ function App() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-3">
-            <div className="tooltip">
+          <div className="flex items-center gap-1">
+            <div className="tooltip  tooltip-bottom md:tooltip-top">
               <div className="tooltip-content">
-                <div className="animate-bounce text-orange-400  text-[14px] font-black">
+                <div className="animate-bounce text-orange-400  text-[14px] font-medium">
                   Activate voice mode, and send msg
                 </div>
               </div>
               <button
                 onClick={() => setVoiceOnlyMode(!voiceOnlyMode)}
-                className={`rounded-full text-xs font-medium transition-all duration-300 ${
+                className={`rounded-full text-xs font-medium  border border-transparent transition-all duration-300 ${
                   voiceOnlyMode
                     ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg"
-                    : "bg-white/20 hover:bg-white/30 backdrop-blur-sm"
+                    : `${
+                        darkMode
+                          ? "text-white/30  hover:border-white/10"
+                          : "text-black/40 hover:border-neutral/10"
+                      }`
                 }`}
               >
-                <div className="flex items-center hover:bg-purple-900/30 rounded-2xl p-2 md:px-3 gap-0.5 md:gap-1 text-[10px] md:text-[12px]">
+                <div className="flex items-center rounded-2xl py-1 px-2 md:gap-0.5 text-[11px] md:text-[13px]">
                   {voiceOnlyMode ? (
                     <Zap className="w-4 h-4" />
                   ) : (
@@ -367,40 +419,67 @@ function App() {
               </button>
             </div>
 
-            <div className="tooltip">
+            <div className="tooltip  tooltip-bottom md:tooltip-top">
               <div className="tooltip-content">
-                <div className="animate-bounce text-orange-400  text-[14px] font-black">
+                <div className="animate-bounce text-orange-400  text-[14px] font-medium">
+                  Keyboard Shortcuts
+                </div>
+              </div>
+              <button
+                onClick={() => setShowShortcuts((prev) => !prev)}
+                className={`border border-transparent hidden md:block rounded-2xl py-1 md:px-2 text-[10px] md:text-[13px] font-semibold ${
+                  showShortcuts
+                    ? "bg-gradient-to-r bg-green-500/10 text-green-500 shadow-lg "
+                    : `${
+                        darkMode
+                          ? "text-white/30  hover:border-white/10 "
+                          : "text-black/40 hover:border-neutral/10"
+                      }`
+                }`}
+              >
+                Shortcuts
+              </button>
+            </div>
+            <div className="tooltip  tooltip-bottom md:tooltip-top">
+              <div className="tooltip-content">
+                <div className="animate-bounce text-orange-400  text-[14px] font-medium">
                   Clear all chats!
                 </div>
               </div>
               <button
                 onClick={clearChat}
-                className="p-2 rounded-full bg-white/20 hover:bg-rose-500/10 transition-all duration-300 backdrop-blur-sm"
+                className="p-2 rounded-full hover:bg-rose-500 text-rose-400  hover:text-white transition-all duration-300"
                 title="Clear all chats"
               >
-                <Trash2 className="w-4 h-4 text-rose-700 font-bold" />
+                <Trash2 className="w-4 h-4 font-bold" />
               </button>
             </div>
-            <div className="tooltip">
+
+            <div className="tooltip  tooltip-bottom md:tooltip-top">
               <div className="tooltip-content">
-                <div className="animate-bounce text-orange-400  text-[14px] font-black">
+                <div className="animate-bounce text-orange-400  text-[14px] font-medium">
                   Download chats
                 </div>
               </div>
               <button
                 onClick={downloadChat}
-                className="p-2 rounded-full bg-white/20 hover:bg-green-500/20 transition-all duration-300 backdrop-blur-sm"
+                className="p-2 rounded-full  text-green-500 hover:text-white hover:bg-green-500 transition-all duration-300"
                 title="Download chat"
               >
-                <ArrowDownToLine className="w-4 h-4 text-green-400" />
+                <ArrowDownToLine className="w-4 h-4" />
               </button>
             </div>
+
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-300 backdrop-blur-sm"
+              className={`p-2 rounded-full  ${
+                darkMode
+                  ? "text-yellow-400 hover:bg-yellow-500 hover:text-white"
+                  : "hover:bg-neutral text-black hover:text-white"
+              }  transition-all duration-300`}
             >
               {darkMode ? (
-                <Sun className="w-4 h-4 text-yellow-200" />
+                <Sun className="w-4 h-4" />
               ) : (
                 <Moon className="w-4 h-4" />
               )}
@@ -421,18 +500,26 @@ function App() {
             {promt.length === 0 && (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto">
-                    <MessageCircle className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold mb-2">
-                      Welcome to RohitGPT!
-                    </h3>
-                    <p className="text-sm opacity-70">
-                      Start a conversation by typing a message below or use
-                      voice input.
-                    </p>
-                  </div>
+                  {showShortcuts ? (
+                    <WelcomeShortcutsModal
+                      onClose={() => setShowShortcuts(false)}
+                    />
+                  ) : (
+                    <>
+                      <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto">
+                        <MessageCircle className="w-8 h-8 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-semibold mb-2">
+                          Welcome to RohitGPT!
+                        </h3>
+                        <p className="text-sm opacity-70">
+                          Start a conversation by typing a message below or use
+                          voice input.
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -457,7 +544,7 @@ function App() {
                   }`}
                 >
                   <div className="text-sm leading-relaxed">{msg.content}</div>
-                  <div className="flex items-center justify-between mt-2">
+                  <div className="flex items-center justify-between mt-1">
                     <div className="text-xs opacity-70">{msg.timestamp}</div>
                     {msg.role === "model" && (
                       <div className="flex items-center gap-2">
@@ -554,6 +641,7 @@ function App() {
                     } focus:outline-none focus:ring-1 focus:ring-blue-500/50 resize-none transition-all duration-200`}
                     placeholder="Type your message"
                     value={input}
+                    autoFocus
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey) {
