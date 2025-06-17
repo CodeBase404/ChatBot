@@ -11,6 +11,7 @@ import {
   Zap,
   ArrowDownToLine,
   Copy,
+  Command,
 } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
 import dp from "/icon.png";
@@ -30,7 +31,6 @@ function App() {
     const stored = localStorage.getItem("dark-mode");
     return stored ? JSON.parse(stored) : true;
   });
-
   const [showEmoji, setShowEmoji] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [activeSpeakerIndex, setActiveSpeakerIndex] = useState(null);
@@ -39,6 +39,7 @@ function App() {
   const [reactions, setReactions] = useState({});
   const [activeReactionIndex, setActiveReactionIndex] = useState(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [pinned, setPinned] = useState([]);
 
   const handleVoiceInput = () => {
     const SpeechRecognition =
@@ -362,6 +363,14 @@ function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [voiceOnlyMode, darkMode, showEmoji, promt]);
 
+  const togglePin = (msg) => {
+    setPinned((prev) =>
+      prev.some((p) => p.id === msg.id)
+        ? prev.filter((p) => p.id !== msg.id)
+        : [...prev, msg]
+    );
+  };
+
   return (
     <div
       className={`min-h-screen font-sans transition-all duration-500 ${themeClasses}`}
@@ -390,15 +399,15 @@ function App() {
           </div>
 
           <div className="flex items-center gap-1">
-            <div className="tooltip  tooltip-bottom md:tooltip-top">
+            <div className="tooltip tooltip-bottom md:tooltip-top">
               <div className="tooltip-content">
-                <div className="animate-bounce text-orange-400  text-[14px] font-medium">
+                <div className="animate-bounce text-orange-400 text-[14px] font-medium">
                   Activate voice mode, and send msg
                 </div>
               </div>
               <button
                 onClick={() => setVoiceOnlyMode(!voiceOnlyMode)}
-                className={`rounded-full text-xs font-medium  border border-transparent transition-all duration-300 ${
+                className={`rounded-full cursor-pointer text-xs font-medium  border border-transparent transition-all duration-300 ${
                   voiceOnlyMode
                     ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg"
                     : `${
@@ -408,7 +417,7 @@ function App() {
                       }`
                 }`}
               >
-                <div className="flex items-center rounded-2xl py-1 px-2 md:gap-0.5 text-[11px] md:text-[13px]">
+                <div className="flex items-center rounded-2xl py-1 px-2 gap-0.5 md:gap-1 text-[11px] md:text-[13px]">
                   {voiceOnlyMode ? (
                     <Zap className="w-4 h-4" />
                   ) : (
@@ -419,7 +428,7 @@ function App() {
               </button>
             </div>
 
-            <div className="tooltip  tooltip-bottom md:tooltip-top">
+            <div className="tooltip tooltip-bottom md:tooltip-top">
               <div className="tooltip-content">
                 <div className="animate-bounce text-orange-400  text-[14px] font-medium">
                   Keyboard Shortcuts
@@ -427,7 +436,7 @@ function App() {
               </div>
               <button
                 onClick={() => setShowShortcuts((prev) => !prev)}
-                className={`border border-transparent hidden md:block rounded-2xl py-1 md:px-2 text-[10px] md:text-[13px] font-semibold ${
+                className={`md:flex items-center gap-1 border border-transparent cursor-pointer hidden rounded-2xl py-1 md:px-2 text-[10px] md:text-[13px] font-semibold ${
                   showShortcuts
                     ? "bg-gradient-to-r bg-green-500/10 text-green-500 shadow-lg "
                     : `${
@@ -437,10 +446,12 @@ function App() {
                       }`
                 }`}
               >
+                <Command className="w-4 h-4" />
                 Shortcuts
               </button>
             </div>
-            <div className="tooltip  tooltip-bottom md:tooltip-top">
+
+            <div className="tooltip tooltip-bottom md:tooltip-top">
               <div className="tooltip-content">
                 <div className="animate-bounce text-orange-400  text-[14px] font-medium">
                   Clear all chats!
@@ -448,14 +459,14 @@ function App() {
               </div>
               <button
                 onClick={clearChat}
-                className="p-2 rounded-full hover:bg-rose-500 text-rose-400  hover:text-white transition-all duration-300"
+                className="p-2 cursor-pointer rounded-full hover:bg-rose-500 text-rose-400  hover:text-white transition-all duration-300"
                 title="Clear all chats"
               >
                 <Trash2 className="w-4 h-4 font-bold" />
               </button>
             </div>
 
-            <div className="tooltip  tooltip-bottom md:tooltip-top">
+            <div className="tooltip tooltip-bottom md:tooltip-top">
               <div className="tooltip-content">
                 <div className="animate-bounce text-orange-400  text-[14px] font-medium">
                   Download chats
@@ -463,7 +474,7 @@ function App() {
               </div>
               <button
                 onClick={downloadChat}
-                className="p-2 rounded-full  text-green-500 hover:text-white hover:bg-green-500 transition-all duration-300"
+                className="p-2 rounded-full cursor-pointer text-green-500 hover:text-white hover:bg-green-500 transition-all duration-300"
                 title="Download chat"
               >
                 <ArrowDownToLine className="w-4 h-4" />
@@ -472,7 +483,7 @@ function App() {
 
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className={`p-2 rounded-full  ${
+              className={`p-2 cursor-pointer rounded-full  ${
                 darkMode
                   ? "text-yellow-400 hover:bg-yellow-500 hover:text-white"
                   : "hover:bg-neutral text-black hover:text-white"
@@ -497,31 +508,41 @@ function App() {
                 : "shadow border-black/10"
             }`}
           >
+            {pinned.length > 0 && (
+              <div className="sticky -top-4 z-50 p-3 bg-yellow-100 rounded">
+                <h3 className="font-bold text-sm mb-1">📌 Pinned</h3>
+                <ul className="space-y-1 text-sm">
+                  {pinned.map((p) => (
+                    <li key={p.id}>{p.content}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {promt.length === 0 && (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center space-y-4">
-                  {showShortcuts ? (
-                    <WelcomeShortcutsModal
-                      onClose={() => setShowShortcuts(false)}
-                    />
-                  ) : (
-                    <>
-                      <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto">
-                        <MessageCircle className="w-8 h-8 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-semibold mb-2">
-                          Welcome to RohitGPT!
-                        </h3>
-                        <p className="text-sm opacity-70">
-                          Start a conversation by typing a message below or use
-                          voice input.
-                        </p>
-                      </div>
-                    </>
-                  )}
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto">
+                    <MessageCircle className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold mb-2">
+                      Welcome to RohitGPT!
+                    </h3>
+                    <p className="text-sm opacity-70">
+                      Start a conversation by typing a message below or use
+                      voice input.
+                    </p>
+                  </div>
                 </div>
               </div>
+            )}
+
+            {showShortcuts && (
+              <WelcomeShortcutsModal
+                onClose={() => setShowShortcuts(false)}
+                darkMode={darkMode}
+              />
             )}
 
             {promt.map((msg, idx) => (
@@ -537,7 +558,7 @@ function App() {
                 } animate-fade-in`}
               >
                 <div
-                  className={`max-w-[80%] p-4 rounded-2xl shadow-lg backdrop-blur-sm border transition-all duration-300 hover:shadow-xl ${
+                  className={`max-w-[80%] p-4 rounded-2xl shadow-lg backdrop-blur-sm border transition-all duration-300 ${
                     msg.role === "user"
                       ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white border-white/20 rounded-br-md"
                       : "bg-white/90 text-gray-800 border-white/30 rounded-bl-md"
@@ -548,37 +569,36 @@ function App() {
                     <div className="text-xs opacity-70">{msg.timestamp}</div>
                     {msg.role === "model" && (
                       <div className="flex items-center gap-2">
-                        <div className="relative  text-sm text-gray-500">
+                        <div className="relative text-sm text-gray-500">
                           <button className=" hover:text-purple-600">
                             {reactions[idx] ? `${reactions[idx]}` : ""}
                           </button>
 
                           {activeReactionIndex === idx && (
-                            <div className="absolute -top-15 -right-19  bg-white p-4 rounded-lg select-none shadow-lg flex gap-5 z-10">
-                              <button onClick={() => handleReact(idx, "👍")}>
-                                👍
-                              </button>
-                              <button onClick={() => handleReact(idx, "❤️")}>
-                                ❤️
-                              </button>
-                              <button onClick={() => handleReact(idx, "😂")}>
-                                😂
-                              </button>
-                              <button onClick={() => handleReact(idx, "🥲")}>
-                                🥲
-                              </button>
-                              <button onClick={() => handleReact(idx, "😁")}>
-                                😁
-                              </button>
-                              <button onClick={() => handleReact(idx, "😎")}>
-                                😎
-                              </button>
-                              <button onClick={() => handleReact(idx, "")}>
+                            <div className="absolute top-8 -right-28 md:right-48 lg:right-55 p-4 rounded-lg select-none flex gap-5 z-10">
+                              {["👍", "❤️", "😂", "🥲", "😁", "😎"].map((emoji) => (
+                                <button
+                                  key={emoji}
+                                  onClick={() => handleReact(idx, emoji)}
+                                  className="text-sm md:text-lg hover:scale-130 transition"
+                                >
+                                  {emoji}
+                                </button>
+                              ))}
+                                <button onClick={() => handleReact(idx, "")}>
                                 <Trash2 size={16} />
-                              </button>
+                              </button> 
                             </div>
                           )}
                         </div>
+
+                        <button
+                          onClick={() => togglePin(msg)}
+                          className="text-yellow-500 text-sm hover:scale-110 transition"
+                        >
+                          📌
+                        </button>
+
                         <button
                           onClick={() => speakText(msg.content, idx)}
                           className="p-1 rounded-full hover:bg-gray-400/20  transition-all duration-200"
@@ -593,6 +613,7 @@ function App() {
                             <Volume2 className="w-4 h-4" />
                           )}
                         </button>
+
                         <button
                           onClick={() => {
                             navigator.clipboard.writeText(msg.content);
@@ -626,7 +647,7 @@ function App() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setShowEmoji(!showEmoji)}
-                  className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-200"
+                  className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-200 cursor-pointer"
                 >
                   <Smile className="w-5 h-5" />
                 </button>
@@ -657,7 +678,7 @@ function App() {
 
                 <button
                   onClick={handleVoiceInput}
-                  className={`p-2 rounded-full transition-all duration-300 ${
+                  className={`p-2 rounded-full transition-all duration-300 cursor-pointer ${
                     isListening
                       ? "bg-red-500 text-white shadow-lg"
                       : "bg-white/20 hover:bg-white/30"
@@ -673,7 +694,7 @@ function App() {
                 <button
                   onClick={() => handleSendPrompt()}
                   disabled={loading || !input.trim()}
-                  className="p-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  className="p-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
                 >
                   <Send className="w-5 h-5" />
                 </button>
