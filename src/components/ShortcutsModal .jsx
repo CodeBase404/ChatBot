@@ -12,7 +12,7 @@ const WelcomeShortcutsModal = ({ onClose, darkMode }) => {
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 ">
+    <div className="sticky inset-0 z-50 flex items-center justify-center p-4 ">
       <div className={`p-6 rounded-2xl max-w-lg w-full shadow-xl ${darkMode?"bg-neutral":"bg-white"} relative backdrop-blur-3xl`}>
         <h1 className="mb-5 text-xl font-bold font-mono text-center ">Here is a list of keyboard shortcuts</h1>
         <div className="flex items-center justify-center  ">

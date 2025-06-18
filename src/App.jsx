@@ -40,6 +40,11 @@ function App() {
   const [activeReactionIndex, setActiveReactionIndex] = useState(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [pinned, setPinned] = useState([]);
+  const [chatStartTime, setChatStartTime] = useState(() => {
+    const stored = localStorage.getItem("chat-start-time");
+    return stored ? parseInt(stored) : null;
+  });
+  const [elapsedTime, setElapsedTime] = useState("0s");
 
   const handleVoiceInput = () => {
     const SpeechRecognition =
@@ -262,6 +267,8 @@ function App() {
       setPromt([]);
       saveToLocalStorage([]);
       setReactions({});
+      setChatStartTime(null);
+      localStorage.removeItem("chat-start-time");
       localStorage.removeItem("chat-reactions");
     }
   };
@@ -371,6 +378,28 @@ function App() {
     );
   };
 
+  useEffect(() => {
+    if (promt.length > 0 && !chatStartTime) {
+      const now = Date.now();
+      setChatStartTime(now);
+      localStorage.setItem("chat-start-time", now.toString());
+    }
+  }, [promt, chatStartTime]);
+
+  useEffect(() => {
+    if (!chatStartTime) return;
+
+    const interval = setInterval(() => {
+      const seconds = Math.floor((Date.now() - chatStartTime) / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+
+      setElapsedTime(`${minutes}m ${remainingSeconds}s`);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [chatStartTime]);
+
   return (
     <div
       className={`min-h-screen font-sans transition-all duration-500 ${themeClasses}`}
@@ -378,7 +407,7 @@ function App() {
       <div className="max-w-4xl mx-auto p-2 md:p-4 h-screen flex flex-col">
         {/* Header */}
         <div
-          className={`flex justify-between items-center select-none mb-4 p-2 gap-1.5 md:p-4 bg-white/10 backdrop-blur-lg rounded-2xl border ${
+          className={`flex justify-between items-center select-none ${chatStartTime ? 'mb-5':'mb-3'} p-2 gap-1.5 md:p-4 bg-white/10 backdrop-blur-lg rounded-2xl border ${
             darkMode ? "border-white/10 " : "border-black/10"
           } shadow`}
         >
@@ -397,6 +426,13 @@ function App() {
               </div>
             </div>
           </div>
+
+          {chatStartTime && (
+            <div className="fixed top-16.5 md:top-20.5 font-semibold w-full right-0 text-xs text-gray-400 text-center mb-2">
+              ⏱️Chat running :{" "}
+              <span className="font-medium text-yellow-400">{elapsedTime}</span>
+            </div>
+          )}
 
           <div className="flex items-center gap-1">
             <div className="tooltip tooltip-bottom md:tooltip-top">
@@ -538,13 +574,6 @@ function App() {
               </div>
             )}
 
-            {showShortcuts && (
-              <WelcomeShortcutsModal
-                onClose={() => setShowShortcuts(false)}
-                darkMode={darkMode}
-              />
-            )}
-
             {promt.map((msg, idx) => (
               <div
                 onClick={() =>
@@ -575,32 +604,43 @@ function App() {
                           </button>
 
                           {activeReactionIndex === idx && (
-                            <div className="absolute top-8 -right-28 md:right-48 lg:right-55 p-4 rounded-lg select-none flex gap-5 z-10">
-                              {["👍", "❤️", "😂", "🥲", "😁", "😎"].map((emoji) => (
-                                <button
-                                  key={emoji}
-                                  onClick={() => handleReact(idx, emoji)}
-                                  className="text-sm md:text-lg hover:scale-130 transition"
-                                >
-                                  {emoji}
-                                </button>
-                              ))}
-                                <button onClick={() => handleReact(idx, "")}>
+                            <div className="absolute top-8 -right-25 p-4 rounded-lg select-none flex gap-3 z-10">
+                              {["👍", "❤️", "😂", "🥲", "😁", "😎"].map(
+                                (emoji) => (
+                                  <button
+                                    key={emoji}
+                                    onClick={() => handleReact(idx, emoji)}
+                                    className="text-sm md:text-lg hover:scale-130 transition"
+                                  >
+                                    {emoji}
+                                  </button>
+                                )
+                              )}
+                              <button
+                                onClick={() => handleReact(idx, "")}
+                                className="hover:scale-130 transition"
+                              >
                                 <Trash2 size={16} />
-                              </button> 
+                              </button>
                             </div>
                           )}
                         </div>
 
                         <button
-                          onClick={() => togglePin(msg)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            togglePin(msg);
+                          }}
                           className="text-yellow-500 text-sm hover:scale-110 transition"
                         >
                           📌
                         </button>
 
                         <button
-                          onClick={() => speakText(msg.content, idx)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            speakText(msg.content, idx);
+                          }}
                           className="p-1 rounded-full hover:bg-gray-400/20  transition-all duration-200"
                           disabled={
                             activeSpeakerIndex !== null &&
@@ -615,7 +655,8 @@ function App() {
                         </button>
 
                         <button
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             navigator.clipboard.writeText(msg.content);
                           }}
                           className="p-1 rounded hover:text-green-700 active:scale-95 hover:bg-gray-400/20  transition-all duration-200"
@@ -629,6 +670,13 @@ function App() {
                 </div>
               </div>
             ))}
+
+            {showShortcuts && (
+              <WelcomeShortcutsModal
+                onClose={() => setShowShortcuts(false)}
+                darkMode={darkMode}
+              />
+            )}
 
             {loading && (
               <div className="flex justify-start pl-2">
