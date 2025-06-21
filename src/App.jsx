@@ -23,7 +23,7 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const GEMINI_API_KEY = "AIzaSyB11RNtdp9C4jrO3GYA_fDN_riT3MehRu4";
 const ELEVEN_LABS_API_KEY =
-  "sk_3cf482af50699721277654a122c016b940a1f7df7f9c9749";
+  "sk_65a701c4aedb706fe935d8a510f6f2dfb3923757a2f5aead";
 const VOICE_ID = "zs7UfyHqCCmny7uTxCYi";
 
 function App() {
