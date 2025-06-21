@@ -394,11 +394,24 @@ function App() {
     if (!chatStartTime) return;
 
     const interval = setInterval(() => {
-      const seconds = Math.floor((Date.now() - chatStartTime) / 1000);
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = seconds % 60;
+      const totalSeconds  = Math.floor((Date.now() - chatStartTime) / 1000);
+      const days = Math.floor(totalSeconds  / (24 * 3600));
+    const hours = Math.floor((totalSeconds  % (24 * 3600)) / 3600);
+      const minutes = Math.floor((totalSeconds  % 3600)/60);
+      const seconds = totalSeconds % 60;
 
-      setElapsedTime(`${minutes}m ${remainingSeconds}s`);
+      let timeString = "";
+
+      if (days > 0) {
+      timeString = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    } else if (hours > 0) {
+      timeString = `${hours}h ${minutes}m ${seconds}s`;
+    } else {
+      timeString = `${minutes}m ${seconds}s`;
+    }
+
+
+      setElapsedTime(timeString);
     }, 1000);
 
     return () => clearInterval(interval);
