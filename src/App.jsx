@@ -16,6 +16,10 @@ import {
 import EmojiPicker from "emoji-picker-react";
 import dp from "/icon.png";
 import WelcomeShortcutsModal from "./components/ShortcutsModal ";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const GEMINI_API_KEY = "AIzaSyB11RNtdp9C4jrO3GYA_fDN_riT3MehRu4";
 const ELEVEN_LABS_API_KEY =
@@ -407,7 +411,9 @@ function App() {
       <div className="max-w-4xl mx-auto p-2 md:p-4 h-screen flex flex-col">
         {/* Header */}
         <div
-          className={`flex justify-between items-center select-none ${chatStartTime ? 'mb-5':'mb-3'} p-2 gap-1.5 md:p-4 bg-white/10 backdrop-blur-lg rounded-2xl border ${
+          className={`flex justify-between items-center select-none ${
+            chatStartTime ? "mb-5" : "mb-3"
+          } p-2 gap-1.5 md:p-4 bg-white/10 backdrop-blur-lg rounded-2xl border ${
             darkMode ? "border-white/10 " : "border-black/10"
           } shadow`}
         >
@@ -593,7 +599,36 @@ function App() {
                       : "bg-white/90 text-gray-800 border-white/30 rounded-bl-md"
                   }`}
                 >
-                  <div className="text-sm leading-relaxed">{msg.content}</div>
+                  <div className="text-sm leading-relaxed">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        code({ node, inline, className, children, ...props }) {
+                          const match = /language-(\w+)/.exec(className || "");
+                          return !inline && match ? (
+                            <SyntaxHighlighter
+                              style={oneDark}
+                              language={match[1]}
+                              PreTag="div"
+                              className="rounded-lg mt-2"
+                              {...props}
+                            >
+                              {String(children).replace(/\n$/, "")}
+                            </SyntaxHighlighter>
+                          ) : (
+                            <code
+                              className="bg-gray-800 text-white px-1 py-0.5 rounded text-xs"
+                              {...props}
+                            >
+                              {children}
+                            </code>
+                          );
+                        },
+                      }}
+                    >
+                      {msg.content}
+                    </ReactMarkdown>
+                  </div>
                   <div className="flex items-center justify-between mt-1">
                     <div className="text-xs opacity-70">{msg.timestamp}</div>
                     {msg.role === "model" && (

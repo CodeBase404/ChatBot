@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { X } from "lucide-react";
 
 const WelcomeShortcutsModal = ({ onClose, darkMode }) => {
-  // Optional: Close modal on Esc key
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") onClose();
