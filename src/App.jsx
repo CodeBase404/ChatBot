@@ -20,6 +20,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import PinnedSection from "./components/PinnedSection ";
 
 const GEMINI_API_KEY = "AIzaSyB11RNtdp9C4jrO3GYA_fDN_riT3MehRu4";
 const ELEVEN_LABS_API_KEY =
@@ -557,21 +558,14 @@ function App() {
         <div className="flex-1 flex flex-col min-h-0">
           <div
             ref={scrollRef}
-            className={`flex-1 overflow-y-auto scrollbar-none p-4 space-y-4 bg-white/5 backdrop-blur-lg rounded-2xl border ${
+            className={`flex-1 overflow-y-auto scrollbar-none p-2 md:p-4 space-y-4 bg-white/5 backdrop-blur-lg rounded-2xl border ${
               darkMode
                 ? "border-white/10  shadow-inner"
                 : "shadow border-black/10"
             }`}
           >
             {pinned.length > 0 && (
-              <div className="sticky -top-4 z-50 p-3 bg-yellow-100 rounded">
-                <h3 className="font-bold text-sm mb-1">📌 Pinned</h3>
-                <ul className="space-y-1 text-sm">
-                  {pinned.map((p) => (
-                    <li key={p.id}>{p.content}</li>
-                  ))}
-                </ul>
-              </div>
+              <PinnedSection pinned={pinned} />
             )}
 
             {promt.length === 0 && (
@@ -606,7 +600,7 @@ function App() {
                 } animate-fade-in`}
               >
                 <div
-                  className={`max-w-[80%] p-4 rounded-2xl shadow-lg backdrop-blur-sm border transition-all duration-300 ${
+                  className={`max-w-[100%] sm:max-w-[80%] p-4 rounded-2xl shadow-lg backdrop-blur-sm border transition-all duration-300 ${
                     msg.role === "user"
                       ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white border-white/20 rounded-br-md"
                       : "bg-white/90 text-gray-800 border-white/30 rounded-bl-md"
